@@ -168,6 +168,8 @@ with st.sidebar:
             ],
         )
 
+        questions_chain = questions_prompt | llm
+
     level = st.selectbox("The level of difficulty", (
         "Level 1",
         "Level 2",
@@ -189,9 +191,6 @@ with st.sidebar:
         topic = st.text_input("The topic to learn")
         if topic:
             docs = wiki_search(topic)
-
-
-questions_chain = questions_prompt | llm
 
 if not docs:
     st.markdown("""
