@@ -51,22 +51,6 @@ format = {
             },
 }
 
-llm = ChatOpenAI(
-    temperature=0.1,
-    model="gpt-4.1-nano-2025-04-14",
-    streaming=True,
-    callbacks=[
-        StreamingStdOutCallbackHandler()
-    ]
-).bind(
-    function_call={
-        "name": "create_quiz",
-    },
-    functions=[
-        format
-    ],
-)
-
 questions_prompt = ChatPromptTemplate.from_messages( [
         (
             "system",
@@ -169,6 +153,23 @@ with st.sidebar:
     user_openai_api_key = st.text_input("Enter your OpenAI API key.")
     if user_openai_api_key:
             os.environ['OPENAI_API_KEY'] = user_openai_api_key
+
+            llm = ChatOpenAI(
+                temperature=0.1,
+                model="gpt-4.1-nano-2025-04-14",
+                streaming=True,
+                callbacks=[
+                    StreamingStdOutCallbackHandler()
+                ],
+                api_key=user_openai_api_key,
+            ).bind(
+                function_call={
+                    "name": "create_quiz",
+                },
+                functions=[
+                    format
+                ],
+            )
 
     level = st.selectbox("The level of difficulty", (
         "Level 1",
