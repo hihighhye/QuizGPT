@@ -92,8 +92,6 @@ questions_prompt = ChatPromptTemplate.from_messages( [
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
-questions_chain = questions_prompt | llm
-
 
 st.set_page_config(
     page_title="QuizGPT",
@@ -125,7 +123,6 @@ def split_file(file):
     docs = [ Document(page_content=doc) for doc in docs ]
     return docs
 
-
 @st.cache_data(show_spinner="Making quiz...")
 def run_quiz_chain(_docs, level, topic):
     formatted_docs = format_docs(_docs)
@@ -152,24 +149,24 @@ with st.sidebar:
 
     user_openai_api_key = st.text_input("Enter your OpenAI API key.")
     if user_openai_api_key:
-            os.environ['OPENAI_API_KEY'] = user_openai_api_key
+        os.environ['OPENAI_API_KEY'] = user_openai_api_key
 
-            llm = ChatOpenAI(
-                temperature=0.1,
-                model="gpt-4.1-nano-2025-04-14",
-                streaming=True,
-                callbacks=[
-                    StreamingStdOutCallbackHandler()
-                ],
-                api_key=user_openai_api_key,
-            ).bind(
-                function_call={
-                    "name": "create_quiz",
-                },
-                functions=[
-                    format
-                ],
-            )
+        llm = ChatOpenAI(
+            temperature=0.1,
+            model="gpt-4.1-nano-2025-04-14",
+            streaming=True,
+            callbacks=[
+                StreamingStdOutCallbackHandler()
+            ],
+            api_key=user_openai_api_key,
+        ).bind(
+            function_call={
+                "name": "create_quiz",
+            },
+            functions=[
+                format
+            ],
+        )
 
     level = st.selectbox("The level of difficulty", (
         "Level 1",
@@ -192,6 +189,9 @@ with st.sidebar:
         topic = st.text_input("The topic to learn")
         if topic:
             docs = wiki_search(topic)
+
+
+questions_chain = questions_prompt | llm
 
 if not docs:
     st.markdown("""
